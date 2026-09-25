@@ -329,7 +329,41 @@
     });
   }
 
-  /* ---------- 2e. CSGO menu: etykiety paska + outfit pod PLAY ---------- */
+  /* ---------- 2g. OUTFIT: wlasny pasek (oryginalny ukryty w CSS) ---------- */
+  function syncOutfit() {
+    try {
+      var t = window.game && window.game.previewCharTeam;
+      document.querySelectorAll('#csweb-outfit button').forEach(function (b) {
+        b.classList.toggle('sel', b.getAttribute('data-v') === t);
+      });
+    } catch (e) {}
+  }
+  function outfitBar() {
+    try {
+      var bar = document.getElementById('csweb-outfit');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'csweb-outfit';
+        bar.innerHTML = '<button data-v="CT">CT OUTFIT</button><button data-v="T">T OUTFIT</button>';
+        document.body.appendChild(bar);
+        bar.addEventListener('click', function (e) {
+          var b = e.target && e.target.closest ? e.target.closest('button') : null;
+          if (!b) return;
+          try { if (window.game && window.game.setPreviewTeam) window.game.setPreviewTeam(b.getAttribute('data-v')); } catch (err) {}
+          syncOutfit();
+        });
+      }
+      var show = false;
+      try {
+        var tp = document.getElementById('tab-play'), menu = document.getElementById('menu');
+        show = !!(tp && tp.classList.contains('sel') && menu && getComputedStyle(menu).display !== 'none');
+      } catch (e2) {}
+      bar.style.display = show ? 'flex' : 'none';
+      if (show) syncOutfit();
+    } catch (e) {}
+  }
+
+  /* ---------- 2e. CSGO menu: etykiety paska ---------- */
   var CSGO_TABS = { play: 'PLAY', loadout: 'LOADOUT', locker: 'INVENTORY', cases: 'CASES', settings: 'SETTINGS' };
   function csgoMenu() {
     try {
@@ -342,21 +376,6 @@
           if (L && b.textContent !== L) b.textContent = L;
         });
       }
-      var pb = document.getElementById('btn-play');
-      var obs = document.querySelectorAll('#opt-outfit');
-      obs.forEach(function (ob) {
-        if (pb && ob.parentNode === pb.parentNode && pb.nextElementSibling !== ob) pb.after(ob);
-        try {
-          ob.style.position = 'fixed';
-          ob.style.left = '60%';
-          ob.style.bottom = '6%';
-          ob.style.transform = 'translateX(-50%)';
-          ob.style.display = 'flex';
-          ob.style.gap = '8px';
-          ob.style.marginTop = '0';
-          ob.style.zIndex = '55';
-        } catch (e2) {}
-      });
       if (!document.body.classList.contains('csweb-csgo')) document.body.classList.add('csweb-csgo');
     } catch (e) {}
   }
@@ -383,6 +402,7 @@
   mapLabels(document);
   hideJunk();
   csgoMenu();
+  outfitBar();
   loadoutTidy();
   lockerGroups();
   scoreFix();
@@ -398,6 +418,7 @@
     mapLabels(document);
     hideJunk();
     csgoMenu();
+    outfitBar();
     coinFix();
     loadoutTidy();
     lockerGroups();
