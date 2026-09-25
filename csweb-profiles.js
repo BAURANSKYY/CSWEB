@@ -25,6 +25,25 @@
   var lastNick = lsGet(ACTIVE_KEY);
   var unlockTried = false;
 
+  //usuniecie nadanych skinow gdy nick to nie BAURANSKYY (uid 'all...')
+  function stripGranted() {
+    if ((lsGet(ACTIVE_KEY) || '').toLowerCase() === 'bauranskyy') return false;
+    var raw = lsGet(INV_KEY), d;
+    try { d = JSON.parse(raw); } catch (e) { return false; }
+    if (!d || !d.items) return false;
+    var n0 = d.items.length;
+    d.items = d.items.filter(function (it) { return !(it.uid && it.uid.indexOf('all') === 0); });
+    if (d.items.length === n0) return false;
+    try {
+      lsSet(INV_KEY, JSON.stringify(d));
+      var a = lsGet(ACTIVE_KEY);
+      if (a) lsSet(PFX + a, JSON.stringify(d));
+    } catch (e) { return false; }
+    lastSeen = lsGet(INV_KEY);
+    return true;
+  }
+  try { stripGranted(); } catch (e) {}
+
   // 1b. BAURANSKYY: wszystkie skiny z katalogu (raz na zmiane nicku)
   function unlockAll() {
     if ((lsGet(ACTIVE_KEY) || '').toLowerCase() !== 'bauranskyy') return;
@@ -68,6 +87,7 @@
       lastSeen = lsGet(INV_KEY);
       lastNick = engName;
       unlockTried = false;
+      try { if (stripGranted()) { location.reload(); return; } } catch (e) {}
       try { unlockAll(); } catch (e) {}
       return;
     }
