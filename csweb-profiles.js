@@ -9,7 +9,7 @@
   var ACTIVE_KEY = 'csweb_active';
   var CLOUDUID_KEY = 'csweb_clouduid';
   var PFX = 'csweb_inv_';
-  var SB_URL = 'https://yynxwosvmdimsjrjklkn.supabase.co';
+  var SB_URL = 'https://yyxnwsovmdlmsjrlkjkn.supabase.co';
   var SB_KEY = 'sb_publishable_D2jgttkr7CA9vUZPXx0Pqg_LtWT8VCw';
   var sb = null;
 
