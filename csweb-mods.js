@@ -342,8 +342,8 @@
           if (L && b.textContent !== L) b.textContent = L;
         });
       }
-      var cn = document.getElementById('charname'), ob = document.getElementById('opt-outfit');
-      if (ob && cn && cn.nextElementSibling !== ob) cn.after(ob);
+      var pb = document.getElementById('btn-play'), ob = document.getElementById('opt-outfit');
+      if (pb && ob && ob.parentNode === pb.parentNode && pb.nextElementSibling !== ob) pb.after(ob);
       if (!document.body.classList.contains('csweb-csgo')) document.body.classList.add('csweb-csgo');
     } catch (e) {}
   }

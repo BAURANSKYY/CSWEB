@@ -1566,8 +1566,8 @@ window.__cs2UiScale = function () {
     transform: translateY(-50%); width: 400px; }
   body.csweb-csgo #charname { display: none; }
   body.csweb-csgo #quickopts { background: rgba(8,11,14,0.78); border-radius: 8px; padding: 14px; }
-  body.csweb-csgo #opt-outfit { position: absolute; left: 60%; bottom: 6%; transform: translateX(-50%);
-    display: flex; gap: 8px; margin-top: 0; }
+  body.csweb-csgo #opt-outfit { position: fixed; left: 60%; bottom: 6%; transform: translateX(-50%);
+    display: flex; gap: 8px; margin-top: 0; z-index: 55; }
   /* bez Ranked + zielony PLAY */
   #opt-mode button.soon, #opt-mode button[data-v=""] { display: none !important; }
   #btn-play { background: linear-gradient(180deg, #7bc74f, #4a8f2b) !important; }
