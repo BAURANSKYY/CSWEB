@@ -82,6 +82,9 @@
       + '<div class="row"><input id="csweb-nick" maxlength="20" placeholder="twoj nick, np. gracz123"></div>'
       + '<div class="row"><button class="go" id="csweb-login">Graj jako nick</button>'
       + '<button id="csweb-logout">Wyloguj</button></div>'
+      + '<div class="row"><button id="csweb-export">Eksport profilu</button>'
+      + '<button id="csweb-import">Import profilu</button>'
+      + '<input type="file" id="csweb-file" accept=".json,application/json" style="display:none"></div>'
       + '<div class="row" id="csweb-list" style="opacity:.75"></div></div>';
     document.body.appendChild(wrap);
     var btn = document.getElementById('csweb-profBtn');
@@ -103,6 +106,38 @@
       if (!login(v)) alert('Podaj nick.');
     };
     document.getElementById('csweb-logout').onclick = logout;
+    document.getElementById('csweb-export').onclick = function () {
+      var nick = lsGet(ACTIVE_KEY) || document.getElementById('csweb-nick').value.trim().slice(0, 20);
+      if (!nick) { alert('Najpierw wpisz nick albo zaloguj.'); return; }
+      var snap = lsGet(PFX + nick) || lsGet(INV_KEY);
+      if (!snap) { alert('Brak danych profilu.'); return; }
+      var blob = new Blob([JSON.stringify({ app: 'csweb', nick: nick, inv: JSON.parse(snap) })], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'csweb-profil-' + nick + '.json';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    };
+    document.getElementById('csweb-import').onclick = function () {
+      document.getElementById('csweb-file').click();
+    };
+    document.getElementById('csweb-file').onchange = function (ev) {
+      var f = ev.target.files && ev.target.files[0];
+      if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function () {
+        try {
+          var d = JSON.parse(rd.result);
+          if (!d || d.app !== 'csweb' || !d.nick || !d.inv) throw 0;
+          lsSet(PFX + d.nick, JSON.stringify(d.inv));
+          lsSet(ACTIVE_KEY, d.nick);
+          location.reload();
+        } catch (e) { alert('Zly plik profilu.'); }
+      };
+      rd.readAsText(f);
+      ev.target.value = '';
+    };
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ui);

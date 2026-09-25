@@ -347,8 +347,7 @@
   }
 
   /* ---------- 2f. MONETA: C -> $ ---------- */
-  function coinFix() {
-    try {
+  function coinFix() {    try {
       document.querySelectorAll('#coins i, .chal-reward i, .case-price i').forEach(function (el) {
         if (el.textContent === 'C') el.textContent = '$';
       });
