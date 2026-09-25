@@ -48,8 +48,10 @@
       var nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(function (n) {
-        var v = (n.nodeValue || '').trim().toLowerCase();
-        if (v === 'always included' || v === 'slots 2-5' || v.indexOf('you spawn with this') >= 0) {
+        var v = (n.nodeValue || '').replace(/[\u2013\u2014]/g, '-').trim().toLowerCase();
+        if (v === 'always included' || v === 'slots 2-5' || v.indexOf('you spawn with this') >= 0
+          || v.indexOf('these are the weapons you can buy') === 0
+          || v.indexOf('in a match, open the buy menu') === 0) {
           var el = n.parentNode;
           if (el && el.style) el.style.display = 'none';
         }

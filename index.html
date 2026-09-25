@@ -2395,7 +2395,7 @@ window.__cs2UiScale = function () {
       var nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(function (n) {
-        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.4');
+        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.5');
       });
       // ogon ".IO" (np. CLUTCHER[.IO] w logo): usun, gdy obok jest juz CSWEB
       document.querySelectorAll('span').forEach(function (s) {
