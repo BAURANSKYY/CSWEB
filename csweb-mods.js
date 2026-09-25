@@ -342,8 +342,21 @@
           if (L && b.textContent !== L) b.textContent = L;
         });
       }
-      var pb = document.getElementById('btn-play'), ob = document.getElementById('opt-outfit');
-      if (pb && ob && ob.parentNode === pb.parentNode && pb.nextElementSibling !== ob) pb.after(ob);
+      var pb = document.getElementById('btn-play');
+      var obs = document.querySelectorAll('#opt-outfit');
+      obs.forEach(function (ob) {
+        if (pb && ob.parentNode === pb.parentNode && pb.nextElementSibling !== ob) pb.after(ob);
+        try {
+          ob.style.position = 'fixed';
+          ob.style.left = '60%';
+          ob.style.bottom = '6%';
+          ob.style.transform = 'translateX(-50%)';
+          ob.style.display = 'flex';
+          ob.style.gap = '8px';
+          ob.style.marginTop = '0';
+          ob.style.zIndex = '55';
+        } catch (e2) {}
+      });
       if (!document.body.classList.contains('csweb-csgo')) document.body.classList.add('csweb-csgo');
     } catch (e) {}
   }
