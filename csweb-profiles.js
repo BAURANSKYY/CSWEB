@@ -49,7 +49,7 @@
     if ((lsGet(ACTIVE_KEY) || '').toLowerCase() !== 'bauranskyy') return;
     if (unlockTried) return;
     unlockTried = true;
-    fetch('csweb-catalog.json').then(function (r) { return r.json(); }).then(function (cat) {
+    fetch('csweb-catalog.json?v=06').then(function (r) { return r.json(); }).then(function (cat) {
       if (!cat || !cat.length) return;
       var raw = lsGet(INV_KEY);
       var d;

@@ -2383,8 +2383,8 @@ window.__cs2UiScale = function () {
 <body>
   <div id="game"></div>
 <div id="vignette"></div>
-  <script src="./csweb-mods.js"></script>
-  <script src="./csweb-profiles.js"></script>
+  <script src="./csweb-mods.js?v=06"></script>
+  <script src="./csweb-profiles.js?v=06"></script>
   <script>
   /* CSWEB branding: podmienia napisy CLUTCHER/CLUTCHER.IO w menu i HUD na CSWEB.
      Osobny skrypt (nie tyka silnika gry) - usunac, aby wrocic do org. napisow. */
@@ -2401,7 +2401,7 @@ window.__cs2UiScale = function () {
       var nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(function (n) {
-        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.5');
+        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.6');
       });
       // ogon ".IO" (np. CLUTCHER[.IO] w logo): usun, gdy obok jest juz CSWEB
       document.querySelectorAll('span').forEach(function (s) {
@@ -2420,6 +2420,6 @@ window.__cs2UiScale = function () {
     }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
   })();
   </script>
-  <script type="module" src="./src/main.js"></script>
+  <script type="module" src="./src/main.js?v=06"></script>
 </body>
 </html>

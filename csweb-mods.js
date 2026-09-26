@@ -135,6 +135,56 @@
   }
 
   /* ---------- 2d. SCOREBOARD: bez brandu, nie nad pauzą ---------- */
+  /* ---------- 2c. KAFELKI: pokaz equipniety skin zamiast bialej sylwetki ---------- */
+  var EQCAT = null, EQCAT_LOADING = false;
+  var EQRC = { consumer: '#b0c3d9', industrial: '#5e98d9', milspec: '#4b69ff', restricted: '#8847ff', classified: '#d32ce6', covert: '#eb4b4b', contraband: '#e4ae39', gold: '#ffd24a' };
+  function equipTiles() {
+    try {
+      if (!EQCAT) {
+        if (!EQCAT_LOADING) {
+          EQCAT_LOADING = true;
+          fetch('csweb-catalog.json?v=06').then(function (r) { return r.json(); }).then(function (cat) {
+            EQCAT = {};
+            (cat || []).forEach(function (o) { if (o && o.id) EQCAT[o.id] = o; });
+          }).catch(function () { EQCAT_LOADING = false; });
+        }
+        return;
+      }
+      var raw = null;
+      try { raw = localStorage.getItem('clutcher_inv_v1'); } catch (e) { return; }
+      if (!raw) return;
+      var d;
+      try { d = JSON.parse(raw); } catch (e) { return; }
+      if (!d || !d.items || !d.equipped) return;
+      var byUid = {};
+      d.items.forEach(function (it) { if (it && it.uid) byUid[it.uid] = it; });
+      document.querySelectorAll('.skintile[data-slot]').forEach(function (tile) {
+        try {
+          var slot = tile.getAttribute('data-slot');
+          var uid = d.equipped[slot];
+          if (!uid || !byUid[uid]) return;
+          if (tile.getAttribute('data-csweb-eq') === uid) return;
+          var cat = EQCAT[byUid[uid].skin];
+          if (!cat) return;
+          tile.setAttribute('data-csweb-eq', uid);
+          var rc = EQRC[cat.rarity] || '#fff';
+          tile.style.setProperty('--rc', rc);
+          var bar = tile.querySelector('.st-bar');
+          if (bar) bar.style.background = rc;
+          var nm = tile.querySelector('.st-name');
+          if (nm) { nm.style.display = ''; nm.textContent = cat.name || ''; }
+          var img = tile.querySelector('img.st-icon');
+          var url = 'ui/skins/' + cat.img + '.webp';
+          if (img && img.getAttribute('src') !== url) {
+            var probe = new Image();
+            probe.onload = (function (el, u) { return function () { try { el.src = u; } catch (e) {} }; })(img, url);
+            probe.src = url;
+          }
+        } catch (e) {}
+      });
+    } catch (e) {}
+  }
+
   function scoreFix() {
     try {
       var sb = document.getElementById('scoreboard');
@@ -405,6 +455,7 @@
   outfitBar();
   loadoutTidy();
   lockerGroups();
+  equipTiles();
   scoreFix();
   buildMarket();
   document.addEventListener('keydown', function (e) {
@@ -422,6 +473,7 @@
     coinFix();
     loadoutTidy();
     lockerGroups();
+    equipTiles();
     scoreFix();
     xhairUI();
     buildMarket();
