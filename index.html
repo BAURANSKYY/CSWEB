@@ -1498,6 +1498,7 @@ window.__cs2UiScale = function () {
   #menu { position: absolute; inset: 0; display: none; pointer-events: auto !important;
     zoom: var(--ms, 1);
     background: linear-gradient(180deg, rgba(5,7,10,0.45) 0%, rgba(5,7,10,0.2) 30%, rgba(5,7,10,0.35) 100%); }
+  #logo, .patch { visibility: hidden; }
   #topnav { position: absolute; top: 0; left: 0; right: 0; height: 92px; display: flex; align-items: flex-start;
     justify-content: space-between; padding: 14px 26px 0; background: linear-gradient(180deg, rgba(5,7,10,0.85), rgba(5,7,10,0.35) 80%, transparent); }
   .nav-side { width: 220px; padding-top: 10px; }
@@ -2406,6 +2407,8 @@ window.__cs2UiScale = function () {
       document.querySelectorAll('span').forEach(function (s) {
         if (/^\s*\.IO\s*$/i.test(s.textContent) && /CSWEB/i.test((s.parentNode || {}).textContent || '')) s.remove();
       });
+      // pokaz logo/wersje dopiero po podmianie (zero migniec CLUTCHER.IO)
+      document.querySelectorAll('#logo,.patch').forEach(function (el) { el.style.visibility = 'visible'; });
     }
     sweep(document);
     // dławik: gra odswieza HUD wiele razy na sekunde, zamiatamy max 2x/s
