@@ -79,7 +79,7 @@
     var row = document.createElement('div');
     row.className = 'srow';
     row.id = 'csweb-xrow';
-    row.innerHTML = '<label>CELOWNIK</label><div id="csweb-xbtns" style="display:flex;gap:6px;flex-wrap:wrap"></div>'
+    row.innerHTML = '<label>CROSSHAIR</label><div id="csweb-xbtns" style="display:flex;gap:6px;flex-wrap:wrap"></div>'
       + '<div style="margin-top:6px"><button id="csweb-xstat" class="mbtn" style="font-size:12px"></button></div>';
     box.appendChild(row);
     var btns = row.querySelector('#csweb-xbtns');
@@ -96,7 +96,7 @@
     var st = row.querySelector('#csweb-xstat');
     function ref() {
       var s = xhairGet();
-      st.textContent = 'Statyczny celownik: ' + (s.stat ? 'WŁĄCZONY' : 'wyłączony');
+      st.textContent = 'Static crosshair: ' + (s.stat ? 'ON' : 'off');
     }
     st.onclick = function () {
       var s = xhairGet(); s.stat = !s.stat;
@@ -123,7 +123,7 @@
       box.classList.add('csweb-shut');
       for (var k = 1; k < cards.length; k++) cards[k].classList.add('csweb-hide');
       var first = cards[0];
-      first.title = 'Kliknij, aby rozwinac skiny';
+      first.title = 'Click to expand skins';
       first.addEventListener('click', function (ev) {
         if (!box.classList.contains('csweb-shut')) return;
         ev.stopPropagation();
@@ -157,10 +157,10 @@
   }
 
   /* ---------- 4. MARKETPLACE TESTOWY (wszystko po 1) ---------- */
-  var CATMAP = { glock: 'Pistolety', usps: 'Pistolety', p2000: 'Pistolety', dualies: 'Pistolety', p250: 'Pistolety', 'fiveseven': 'Pistolety', tec9: 'Pistolety', cz75: 'Pistolety', deagle: 'Pistolety', r8: 'Pistolety', ak47: 'Karabiny', m4a4: 'Karabiny', m4a1s: 'Karabiny', aug: 'Karabiny', sg553: 'Karabiny', famas: 'Karabiny', galil: 'Karabiny', mac10: 'SMG', mp9: 'SMG', mp7: 'SMG', mp5sd: 'SMG', ump45: 'SMG', p90: 'SMG', bizon: 'SMG', m249: 'Ciężkie', negev: 'Ciężkie', nova: 'Ciężkie', xm1014: 'Ciężkie', sawedoff: 'Ciężkie', mag7: 'Ciężkie', ssg08: 'Snajperki', awp: 'Snajperki', g3sg1: 'Snajperki', scar20: 'Snajperki' };
+  var CATMAP = { glock: 'Pistols', usps: 'Pistols', p2000: 'Pistols', dualies: 'Pistols', p250: 'Pistols', 'fiveseven': 'Pistols', tec9: 'Pistols', cz75: 'Pistols', deagle: 'Pistols', r8: 'Pistols', ak47: 'Rifles', m4a4: 'Rifles', m4a1s: 'Rifles', aug: 'Rifles', sg553: 'Rifles', famas: 'Rifles', galil: 'Rifles', mac10: 'SMG', mp9: 'SMG', mp7: 'SMG', mp5sd: 'SMG', ump45: 'SMG', p90: 'SMG', bizon: 'SMG', m249: 'Heavy', negev: 'Heavy', nova: 'Heavy', xm1014: 'Heavy', sawedoff: 'Heavy', mag7: 'Heavy', ssg08: 'Snipers', awp: 'Snipers', g3sg1: 'Snipers', scar20: 'Snipers' };
   var RCOL = { 'mil-spec': '#4b69ff', restricted: '#8847ff', classified: '#d32ce6', covert: '#eb4b4b', contraband: '#e67e22', gold: '#ffd75e', base: '#9a9a9a' };
   var catalog = null;
-  var shopFilter = 'Wszystko';
+  var shopFilter = 'All';
   var shopQuery = '';
 
   function invRead() {
@@ -170,7 +170,7 @@
   function invWrite(d) {
     try { localStorage.setItem('clutcher_inv_v1', JSON.stringify(d)); } catch (e) {}
   }
-  var PRICE = { 'Pistolety': 1500, 'SMG': 2500, 'Ciężkie': 3500, 'Karabiny': 5000, 'Snajperki': 7500, 'Noże': 10000, 'Rękawice': 8000, 'Inne': 2000 };
+  var PRICE = { 'Pistols': 1500, 'SMG': 2500, 'Heavy': 3500, 'Rifles': 5000, 'Snipers': 7500, 'Knives': 10000, 'Gloves': 8000, 'Other': 2000 };
   function priceOf(o) { return PRICE[shopCat(o)] || 2000; }
   function shopBuy(id, price) {
     price = price | 0;
@@ -199,7 +199,7 @@
     try { c = H ? H.load().coins : (invRead() || {}).coins; } catch (e) {}
     if (c == null) return;
     var el = document.getElementById('csweb-shop-coins');
-    if (el) el.textContent = 'Masz: ' + c + ' $';
+    if (el) el.textContent = 'Balance: ' + c + ' $';
     try {
       var nav = document.querySelector('#coins');
       if (nav) nav.textContent = nav.textContent.replace(/^\d+/, String(c));
@@ -237,9 +237,9 @@
     }
   }
   function shopCat(o) {
-    if (o.kind === 'knife') return 'Noże';
-    if (o.kind === 'gloves') return 'Rękawice';
-    return CATMAP[o.slot] || 'Inne';
+    if (o.kind === 'knife') return 'Knives';
+    if (o.kind === 'gloves') return 'Gloves';
+    return CATMAP[o.slot] || 'Other';
   }
   var PER_PAGE = 48;
   var shopPage = 0;
@@ -248,7 +248,7 @@
     if (!grid || !catalog) return;
     var q = shopQuery.toLowerCase();
     var all = catalog.filter(function (o) {
-      if (shopFilter !== 'Wszystko' && shopCat(o) !== shopFilter) return false;
+      if (shopFilter !== 'All' && shopCat(o) !== shopFilter) return false;
       if (q && o.name.toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
@@ -265,14 +265,14 @@
       var has = !!own[o.id];
       var price = priceOf(o);
       card.innerHTML = '<div class="csweb-img"><img loading="lazy" src="ui/skins/' + o.img + '.webp" alt="">'
-        + '<button class="csweb-lupa" title="Podgląd 3D">🔍</button></div>'
+        + '<button class="csweb-lupa" title="3D preview">🔍</button></div>'
         + '<div class="csweb-name">' + o.name + '</div>'
-        + '<div class="csweb-buy"><span>' + price + ' $</span><button' + (has ? ' disabled' : '') + '>' + (has ? 'MASZ' : 'KUP') + '</button></div>';
+         + '<div class="csweb-buy"><span>' + price + ' $</span><button' + (has ? ' disabled' : '') + '>' + (has ? 'OWNED' : 'BUY') + '</button></div>';
       if (!has) {
         card.querySelector('.csweb-buy button').onclick = function (ev) {
           ev.stopPropagation();
-          if (shopBuy(o.id, price)) { ev.target.textContent = 'KUPIONE'; ev.target.disabled = true; setTimeout(function () { renderShop(); }, 900); }
-          else alert('Brak monet.');
+          if (shopBuy(o.id, price)) { ev.target.textContent = 'BOUGHT'; ev.target.disabled = true; setTimeout(function () { renderShop(); }, 900); }
+          else alert('Not enough funds.');
         };
       }
       card.querySelector('.csweb-lupa').onclick = function (ev) {
@@ -282,7 +282,7 @@
       grid.appendChild(card);
     });
     var cnt = document.getElementById('csweb-count');
-    if (cnt) cnt.textContent = all.length + ' itemów · strona ' + (shopPage + 1) + '/' + pages;
+    if (cnt) cnt.textContent = all.length + ' items · page ' + (shopPage + 1) + '/' + pages;
     var pv = document.getElementById('csweb-prev');
     var nx = document.getElementById('csweb-next');
     if (pv) pv.disabled = shopPage <= 0;
@@ -303,15 +303,15 @@
     wrap.id = 'csweb-market';
     wrap.innerHTML = '<div id="csweb-shop-coins"></div>'
       + '<div id="csweb-filters"></div>'
-      + '<div class="csweb-tools"><button id="csweb-prev">◀</button><input id="csweb-q" placeholder="szukaj skina..."><button id="csweb-next">▶</button><span id="csweb-count"></span></div>'
+      + '<div class="csweb-tools"><button id="csweb-prev">◀</button><input id="csweb-q" placeholder="search skins..."><button id="csweb-next">▶</button><span id="csweb-count"></span></div>'
       + '<div id="csweb-shop"></div>';
     page.appendChild(wrap);
-    var cats = ['Wszystko', 'Pistolety', 'Karabiny', 'SMG', 'Ciężkie', 'Snajperki', 'Noże', 'Rękawice', 'Inne'];
+    var cats = ['All', 'Pistols', 'Rifles', 'SMG', 'Heavy', 'Snipers', 'Knives', 'Gloves', 'Other'];
     var fb = wrap.querySelector('#csweb-filters');
     cats.forEach(function (c) {
       var b = document.createElement('button');
       b.textContent = c;
-      b.className = c === 'Wszystko' ? 'sel' : '';
+      b.className = c === 'All' ? 'sel' : '';
       b.onclick = function () {
         shopFilter = c;
         shopPage = 0;
