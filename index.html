@@ -1592,27 +1592,6 @@ window.__cs2UiScale = function () {
     box-shadow: 0 0 7px rgba(210,232,252,0.6), inset 0 -1px 2px rgba(25,35,45,0.45), inset 0 1px 1px rgba(255,255,255,0.8);
   }
   #coins i { width: 21px; height: 21px; font-size: 14px; margin-left: 3px; }
-  /* karty fragow + raport smierci + odznaki dmg w scoreboardzie (CS2) */
-  #csweb-frags { position: fixed; left: 50%; bottom: 24%; transform: translateX(-50%);
-    display: flex; flex-direction: column; gap: 6px; align-items: center; z-index: 60;
-    pointer-events: none; }
-  .csweb-fragcard { background: rgba(8,12,16,0.88); border: 1px solid rgba(139,197,63,0.5);
-    border-left: 4px solid #8bc53f; border-radius: 4px; padding: 7px 16px; text-align: center;
-    color: #fff; font-size: 14px; font-weight: 800; letter-spacing: 1px;
-    transition: opacity 0.6s; }
-  .csweb-fragcard.out { opacity: 0; }
-  .csweb-fragcard .hs { color: #ffd24a; }
-  .csweb-fragcard .csweb-frag-dmg { font-size: 12px; color: #9fd66f; font-weight: 700; }
-  #csweb-death { position: fixed; left: 50%; bottom: 32%; transform: translateX(-50%);
-    display: none; z-index: 60; pointer-events: none; text-align: center;
-    background: rgba(8,12,16,0.88); border: 1px solid rgba(255,255,255,0.2);
-    border-top: 3px solid #eb4b4b; border-radius: 4px; padding: 10px 22px; }
-  #csweb-death .csweb-death-title { color: #fff; font-size: 15px; font-weight: 800; letter-spacing: 1px; }
-  #csweb-death .csweb-death-row { font-size: 12.5px; font-weight: 700; margin-top: 4px; }
-  #csweb-death .g { color: #9fd66f; } #csweb-death .r { color: #ff7b7b; }
-  .csweb-dmg { display: flex; gap: 10px; justify-content: center; font-size: 11.5px;
-    font-weight: 800; padding: 2px 0 4px; }
-  .csweb-dmg .g { color: #9fd66f; } .csweb-dmg .r { color: #ff7b7b; }
 
   .tabpage { position: absolute; inset: 92px 0 0 0; display: none; }
   .tabpage.sel { display: block; }
@@ -2404,8 +2383,8 @@ window.__cs2UiScale = function () {
 <body>
   <div id="game"></div>
 <div id="vignette"></div>
-  <script src="./csweb-mods.js?v=08"></script>
-  <script src="./csweb-profiles.js?v=08"></script>
+  <script src="./csweb-mods.js?v=07"></script>
+  <script src="./csweb-profiles.js?v=07"></script>
   <script>
   /* CSWEB branding: podmienia napisy CLUTCHER/CLUTCHER.IO w menu i HUD na CSWEB.
      Osobny skrypt (nie tyka silnika gry) - usunac, aby wrocic do org. napisow. */
@@ -2422,7 +2401,7 @@ window.__cs2UiScale = function () {
       var nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(function (n) {
-        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.8');
+        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.7');
       });
       // ogon ".IO" (np. CLUTCHER[.IO] w logo): usun, gdy obok jest juz CSWEB
       document.querySelectorAll('span').forEach(function (s) {
@@ -2441,6 +2420,6 @@ window.__cs2UiScale = function () {
     }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
   })();
   </script>
-  <script type="module" src="./src/main.js?v=08"></script>
+  <script type="module" src="./src/main.js?v=07"></script>
 </body>
 </html>

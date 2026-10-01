@@ -1,4 +1,4 @@
-﻿/* CSWEB - profile po nicku z ustawien gry (PLAYER NAME).
+/* CSWEB - profile po nicku z ustawien gry (PLAYER NAME).
    Panelu nie ma: nick wpisujesz w SETTINGS, profil laduje sie sam.
    Nick BAURANSKYY odblokowuje wszystkie skiny z katalogu.
    Nie tyka silnika gry: operuje tylko na localStorage. */
@@ -49,7 +49,7 @@
     if ((lsGet(ACTIVE_KEY) || '').toLowerCase() !== 'bauranskyy') return;
     if (unlockTried) return;
     unlockTried = true;
-    fetch('csweb-catalog.json?v=08').then(function (r) { return r.json(); }).then(function (cat) {
+    fetch('csweb-catalog.json?v=06').then(function (r) { return r.json(); }).then(function (cat) {
       if (!cat || !cat.length) return;
       var raw = lsGet(INV_KEY);
       var d;

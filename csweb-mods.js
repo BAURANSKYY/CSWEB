@@ -1,4 +1,4 @@
-﻿/* CSWEB mody: etykiety map, porzadki w menu, celownik, marketplace testowy.
+/* CSWEB mody: etykiety map, porzadki w menu, celownik, marketplace testowy.
    Nie tyka silnika gry poza odczytem/zapisem localStorage i gotowymi klasami CSS. */
 (function () {
   'use strict';
@@ -31,15 +31,15 @@
         var f = a.closest('#menufoot, footer, div');
         if (f) f.style.display = 'none';
       });
-      // piguÅ‚ka rangi w topnav (Master Guardian itd.) - precz, zostaje nick i monety
+      // pigułka rangi w topnav (Master Guardian itd.) - precz, zostaje nick i monety
       document.querySelectorAll('.nav-side.right span, .nav-side.right div').forEach(function (el) {
         if (el.id === 'navname' || el.id === 'coins') return;
-        if (/guardian|legend|eagle|nova|master|supreme|global|silver|gold|distinguished|elite|diamond|ak |sheriff|Â·\s*\d{3,}/i.test(el.textContent || '')) el.style.display = 'none';
+        if (/guardian|legend|eagle|nova|master|supreme|global|silver|gold|distinguished|elite|diamond|ak |sheriff|·\s*\d{3,}/i.test(el.textContent || '')) el.style.display = 'none';
       });
     } catch (e) {}
   }
 
-  /* ---------- 2b. LOADOUT: rÃ³wne kolumny, bez podpisÃ³w ---------- */
+  /* ---------- 2b. LOADOUT: równe kolumny, bez podpisów ---------- */
   function loadoutTidy() {
     try {
       var root = document.getElementById('tab-loadout');
@@ -134,7 +134,7 @@
     });
   }
 
-  /* ---------- 2d. SCOREBOARD: bez brandu, nie nad pauzÄ… ---------- */
+  /* ---------- 2d. SCOREBOARD: bez brandu, nie nad pauzą ---------- */
   /* ---------- 2c. KAFELKI: pokaz equipniety skin zamiast bialej sylwetki ---------- */
   var EQCAT = null, EQCAT_LOADING = false;
   var EQRC = { consumer: '#b0c3d9', industrial: '#5e98d9', milspec: '#4b69ff', restricted: '#8847ff', classified: '#d32ce6', covert: '#eb4b4b', contraband: '#e4ae39', gold: '#ffd24a' };
@@ -143,7 +143,7 @@
       if (!EQCAT) {
         if (!EQCAT_LOADING) {
           EQCAT_LOADING = true;
-          fetch('csweb-catalog.json?v=08').then(function (r) { return r.json(); }).then(function (cat) {
+          fetch('csweb-catalog.json?v=06').then(function (r) { return r.json(); }).then(function (cat) {
             EQCAT = {};
             (cat || []).forEach(function (o) { if (o && o.id) EQCAT[o.id] = o; });
           }).catch(function () { EQCAT_LOADING = false; });
@@ -184,192 +184,6 @@
       });
     } catch (e) {}
   }
-
-  /* ---------- 2d. KARTY OBRAZEN (CS2: fragi + damage w scoreboardzie) ---------- */
-  var DMG = { round: -1, base: new Map(), lastKills: 0, lastAlive: true, lastHs: 0, aliveMap: new Map(), deathFor: null };
-  function dmgEnts() {
-    try {
-      var g = window.game;
-      if (!g || g.state !== 'playing' || !g.allEntities) return null;
-      var list = Array.from(g.allEntities());
-      if (!list.length) return null;
-      return { g: g, list: list };
-    } catch (e) { return null; }
-  }
-  function dmgPlayer(d) {
-    for (var k = 0; k < d.list.length; k++) if (d.list[k].isPlayer) return d.list[k];
-    return null;
-  }
-  function dmgRoundNum(g) {
-    try {
-      if (g.modeCtl && g.modeCtl.roundNum) return g.modeCtl.roundNum;
-      if (g.roundNum) return g.roundNum;
-    } catch (e) {}
-    return 0;
-  }
-  function dmgSnap(ent) {
-    var by = {}, hits = {};
-    try {
-      if (ent._dmgBy) ent._dmgBy.forEach(function (v, k) { by[k.name || '?'] = v; });
-      if (ent._dmgHits) ent._dmgHits.forEach(function (v, k) { hits[k.name || '?'] = v; });
-    } catch (e) {}
-    return { dealt: ent._dmgDealt || 0, kills: ent.kills || 0, hs: ent._hsKills || 0, by: by, hits: hits };
-  }
-  function dmgBase(d) {
-    var rn = dmgRoundNum(d.g);
-    if (rn !== DMG.round) {
-      DMG.round = rn;
-      DMG.synced = false;
-      DMG.base = new Map();
-      d.list.forEach(function (e) { DMG.base.set(e, dmgSnap(e)); });
-      var box = document.getElementById('csweb-death');
-      if (box) box.style.display = 'none';
-      document.querySelectorAll('.csweb-dmg').forEach(function (x) { x.remove(); });
-    }
-  }
-  function dmgDelta(ent, kind, other) {
-    var b = DMG.base.get(ent);
-    var cur = kind === 'dealt' ? (ent._dmgDealt || 0) : 0;
-    if (kind === 'dealt') return cur - (b ? b.dealt : 0);
-    var map = kind === 'by' ? ent._dmgBy : ent._dmgHits;
-    var nm = other.name || '?';
-    var now = 0;
-    try { if (map) now = map.get(other) || 0; } catch (e) {}
-    if (!b) return now;
-    var src = kind === 'by' ? b.by : b.hits;
-    return now - (src[nm] || 0);
-  }
-  function dmgCard(html, ms) {
-    try {
-      var wrap = document.getElementById('csweb-frags');
-      if (!wrap) {
-        wrap = document.createElement('div');
-        wrap.id = 'csweb-frags';
-        document.body.appendChild(wrap);
-      }
-      var el = document.createElement('div');
-      el.className = 'csweb-fragcard';
-      el.innerHTML = html;
-      wrap.appendChild(el);
-      while (wrap.children.length > 3) wrap.removeChild(wrap.firstChild);
-      setTimeout(function () { el.classList.add('out'); setTimeout(function () { el.remove(); }, 600); }, ms || 4500);
-    } catch (e) {}
-  }
-  function dmgDeath(p, killer, given, ghits, taken, thits) {
-    try {
-      var sig = killer + '|' + given + '|' + ghits + '|' + taken + '|' + thits;
-      if (DMG.deathSig === sig) {
-        var bx = document.getElementById('csweb-death');
-        if (bx) bx.style.display = 'block';
-        return;
-      }
-      DMG.deathSig = sig;
-      var box = document.getElementById('csweb-death');
-      if (!box) {
-        box = document.createElement('div');
-        box.id = 'csweb-death';
-        document.body.appendChild(box);
-      }
-      box.innerHTML = '<div class="csweb-death-title">KILLED BY ' + killer + '</div>' +
-        '<div class="csweb-death-row"><span class="g">YOU DEALT ' + given + ' in ' + ghits + ' hits</span></div>' +
-        '<div class="csweb-death-row"><span class="r">TAKEN ' + taken + ' in ' + thits + ' hits</span></div>';
-      box.style.display = 'block';
-    } catch (e) {}
-  }
-  function dmgBadges(d, p) {
-    try {
-      var sb = document.getElementById('scoreboard');
-      if (!sb || getComputedStyle(sb).display === 'none') return;
-      var sig = '';
-      d.list.forEach(function (e) {
-        if (e === p || !e.name || e.team === p.team) return;
-        sig += e.name + ':' + dmgDelta(e, 'by', p) + ':' + dmgDelta(e, 'hits', p) + ':' + dmgDelta(p, 'by', e) + ':' + dmgDelta(p, 'hits', e) + ';';
-      });
-      if (sig === DMG.sbSig && sb.querySelector('.csweb-dmg')) return;
-      DMG.sbSig = sig;
-      document.querySelectorAll('.csweb-dmg').forEach(function (x) { x.remove(); });
-      d.list.forEach(function (e) {
-        if (e === p || !e.name || e.team === p.team) return;
-        var given = dmgDelta(e, 'by', p), gh = dmgDelta(e, 'hits', p);
-        var taken = dmgDelta(p, 'by', e), th = dmgDelta(p, 'hits', e);
-        if (!given && !taken) return;
-        var rows = sb.querySelectorAll('.sb-row');
-        for (var k = 0; k < rows.length; k++) {
-          var nm = rows[k].querySelector('.sb-row__cell--name');
-          if (nm && nm.textContent.trim() === e.name) {
-            var b = document.createElement('div');
-            b.className = 'csweb-dmg';
-            b.innerHTML = '<span class="g">&#9760; ' + given + ' w ' + gh + '</span>' +
-              '<span class="r">&#9760; ' + taken + ' w ' + th + '</span>';
-            rows[k].appendChild(b);
-            break;
-          }
-        }
-      });
-    } catch (e) {}
-  }
-  function dmgTick() {
-    try {
-      var now = Date.now();
-      if (now - (DMG.t || 0) < 700) return;
-      DMG.t = now;
-      var d = dmgEnts();
-      if (!d) return;
-      var p = dmgPlayer(d);
-      if (!p) return;
-      dmgBase(d);
-      if (!DMG.synced) {
-        DMG.synced = true;
-        DMG.lastKills = p.kills || 0;
-        DMG.lastHs = p._hsKills || 0;
-        d.list.forEach(function (e) { DMG.aliveMap.set(e, !!e.alive); });
-        return;
-      }
-      // frag: wzrost killi gracza -> znajdz ofiare (martwa, z obrazeniami od gracza)
-      if ((p.kills || 0) > DMG.lastKills) {
-        DMG.lastKills = p.kills || 0;
-        var best = null, bestDmg = 0;
-        d.list.forEach(function (e) {
-          if (e === p || e.alive) return;
-          var wasAlive = DMG.aliveMap.get(e);
-          var g = dmgDelta(e, 'by', p);
-          if ((wasAlive || g > 0) && g >= bestDmg) { bestDmg = g; best = e; }
-        });
-        var hs = (p._hsKills || 0) > DMG.lastHs;
-        DMG.lastHs = p._hsKills || 0;
-        if (best) {
-          var gh = dmgDelta(best, 'hits', p);
-          dmgCard('<div class="csweb-frag-top">&#9760; YOU KILLED ' + best.name + (hs ? ' <span class="hs">HEADSHOT</span>' : '') + '</div>' +
-            '<div class="csweb-frag-dmg">' + bestDmg + ' damage in ' + gh + ' hits</div>');
-        } else {
-          dmgCard('<div class="csweb-frag-top">&#9760; FRAG +' + 1 + '</div>');
-        }
-      }
-      // smierc gracza -> raport
-      if (!p.alive && DMG.lastAlive) {
-        var killer = null, kd = 0;
-        d.list.forEach(function (e) {
-          if (e === p) return;
-          var t = dmgDelta(p, 'by', e);
-          if (t > kd) { kd = t; killer = e; }
-        });
-        if (killer) {
-          var gv = dmgDelta(killer, 'by', p), gh2 = dmgDelta(killer, 'hits', p);
-          var tk = dmgDelta(p, 'by', killer), th2 = dmgDelta(p, 'hits', killer);
-          dmgDeath(p, killer.name, gv, gh2, tk, th2);
-        }
-      }
-      if (p.alive && !DMG.lastAlive) {
-        var box = document.getElementById('csweb-death');
-        if (box) box.style.display = 'none';
-        DMG.deathSig = null;
-      }
-      DMG.lastAlive = !!p.alive;
-      d.list.forEach(function (e) { DMG.aliveMap.set(e, !!e.alive); });
-      dmgBadges(d, p);
-    } catch (e) {}
-  }
-  try { window.cswebDmg = { tick: dmgTick, frag: dmgCard, death: dmgDeath }; } catch (e) {}
 
   function scoreFix() {
     try {
@@ -501,7 +315,7 @@
       var has = !!own[o.id];
       var price = priceOf(o);
       card.innerHTML = '<div class="csweb-img"><img loading="lazy" src="ui/skins/' + o.img + '.webp" alt="">'
-        + '<button class="csweb-lupa" title="3D preview">ðŸ”</button></div>'
+        + '<button class="csweb-lupa" title="3D preview">🔍</button></div>'
         + '<div class="csweb-name">' + o.name + '</div>'
          + '<div class="csweb-buy"><span>' + price + ' $</span><button' + (has ? ' disabled' : '') + '>' + (has ? 'OWNED' : 'BUY') + '</button></div>';
       if (!has) {
@@ -518,7 +332,7 @@
       grid.appendChild(card);
     });
     var cnt = document.getElementById('csweb-count');
-    if (cnt) cnt.textContent = all.length + ' items Â· page ' + (shopPage + 1) + '/' + pages;
+    if (cnt) cnt.textContent = all.length + ' items · page ' + (shopPage + 1) + '/' + pages;
     var pv = document.getElementById('csweb-prev');
     var nx = document.getElementById('csweb-next');
     if (pv) pv.disabled = shopPage <= 0;
@@ -539,7 +353,7 @@
     wrap.id = 'csweb-market';
     wrap.innerHTML = '<div id="csweb-shop-coins"></div>'
       + '<div id="csweb-filters"></div>'
-      + '<div class="csweb-tools"><button id="csweb-prev">â—€</button><input id="csweb-q" placeholder="search skins..."><button id="csweb-next">â–¶</button><span id="csweb-count"></span></div>'
+      + '<div class="csweb-tools"><button id="csweb-prev">◀</button><input id="csweb-q" placeholder="search skins..."><button id="csweb-next">▶</button><span id="csweb-count"></span></div>'
       + '<div id="csweb-shop"></div>';
     page.appendChild(wrap);
     var cats = ['All', 'Pistols', 'Rifles', 'SMG', 'Heavy', 'Snipers', 'Knives', 'Gloves', 'Other'];
@@ -642,7 +456,6 @@
   loadoutTidy();
   lockerGroups();
   equipTiles();
-  dmgTick();
   scoreFix();
   buildMarket();
   document.addEventListener('keydown', function (e) {
@@ -652,25 +465,18 @@
     if (e.code === 'Tab') document.body.classList.remove('csweb-bigmap');
   });
   window.addEventListener('blur', function () { document.body.classList.remove('csweb-bigmap'); });
-  var CSW_Q = false;
   new MutationObserver(function () {
-    if (CSW_Q) return;
-    CSW_Q = true;
-    setTimeout(function () {
-      CSW_Q = false;
-      mapLabels(document);
-      hideJunk();
-      csgoMenu();
-      outfitBar();
-      coinFix();
-      loadoutTidy();
-      lockerGroups();
-      equipTiles();
-      dmgTick();
-      scoreFix();
-      xhairUI();
-      buildMarket();
-      restoreMarket();
-    }, 400);
+    mapLabels(document);
+    hideJunk();
+    csgoMenu();
+    outfitBar();
+    coinFix();
+    loadoutTidy();
+    lockerGroups();
+    equipTiles();
+    scoreFix();
+    xhairUI();
+    buildMarket();
+    restoreMarket();
   }).observe(document.documentElement, { childList: true, subtree: true });
 })();
