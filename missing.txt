@@ -3737,3 +3737,8 @@
 2026-09-28T19:02:41.880Z 404 /split.json
 2026-09-28T19:03:57.488Z 404 /split.json
 2026-09-28T20:22:41.405Z 404 /split.json
+2026-09-30T20:05:44.338Z 404 /split.json
+2026-09-30T20:24:41.559Z 404 /ui/paints/glovecomp/glove_specialist_dragon_blue_vmat_g_tpatternproperties_64c42066.webp
+2026-09-30T20:24:41.569Z 404 /ui/paints/glovecomp/glove_specialist_dragon_blue_vmat_g_tsurfaceproperties3_ab8bf7ca.webp
+2026-09-30T20:24:42.823Z 404 /ui/paints/glovecomp/glove_specialist_dragon_blue_vmat_g_tpatternproperties_64c42066.webp
+2026-09-30T20:24:43.306Z 404 /ui/paints/glovecomp/glove_specialist_dragon_blue_vmat_g_tsurfaceproperties3_ab8bf7ca.webp
