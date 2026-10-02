@@ -211,6 +211,37 @@
     } catch (e) {}
   }
 
+  /* ---------- 2f. PREFETCH w menu: awatary + podglady skinow przed meczem ---------- */
+  var PRE = { done: false };
+  function prefetch() {
+    try {
+      var g = window.game;
+      if (!g || g.state !== 'menu') { PRE.done = false; return; }
+      if (PRE.done) return;
+      PRE.done = true;
+      var urls = ['ui/avatar_ct.png', 'ui/avatar_t.png', 'ui/sb_avatar_ct.png', 'ui/sb_avatar_t.png',
+        'ui/elimination.svg', 'ui/teamcounter_botavatar.svg', 'ui/sb_logo_ct.svg', 'ui/sb_logo_t.svg'];
+      try {
+        var raw = localStorage.getItem('clutcher_inv_v1');
+        var d = raw && JSON.parse(raw);
+        if (d && d.items && d.equipped && EQCAT) {
+          Object.keys(d.equipped).forEach(function (slot) {
+            for (var k = 0; k < d.items.length; k++) {
+              var it = d.items[k];
+              if (it && it.uid === d.equipped[slot] && EQCAT[it.skin]) {
+                urls.push('ui/skins/' + EQCAT[it.skin].img + '.webp');
+                break;
+              }
+            }
+          });
+        }
+      } catch (e) {}
+      urls.forEach(function (u, k) {
+        setTimeout(function () { try { var im = new Image(); im.src = u; } catch (e) {} }, 800 + k * 150);
+      });
+    } catch (e) {}
+  }
+
   function scoreFix() {
     try {
       var sb = document.getElementById('scoreboard');
@@ -483,6 +514,7 @@
   loadoutTidy();
   lockerGroups();
   equipTiles();
+  prefetch();
   scoreFix();
   buildMarket();
   document.addEventListener('keydown', function (e) {
@@ -501,6 +533,7 @@
     loadoutTidy();
     lockerGroups();
     equipTiles();
+    prefetch();
     scoreFix();
     xhairUI();
     buildMarket();
