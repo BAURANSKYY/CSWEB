@@ -1,0 +1,100 @@
+﻿[
+    {
+        "id":  "st1",
+        "name":  "Sticker | Crown (Foil)",
+        "file":  "sticker_1.png",
+        "rarity":  "Exotic",
+        "color":  "#eb4b4b"
+    },
+    {
+        "id":  "st2",
+        "name":  "Sticker | Titan | Katowice 2014",
+        "file":  "sticker_2.png",
+        "rarity":  "High Grade",
+        "color":  "#4b69ff"
+    },
+    {
+        "id":  "st3",
+        "name":  "Sticker | iBUYPOWER | Katowice 2014",
+        "file":  "sticker_3.png",
+        "rarity":  "High Grade",
+        "color":  "#4b69ff"
+    },
+    {
+        "id":  "st4",
+        "name":  "Sticker | Natus Vincere (Holo) | Katowice 2015",
+        "file":  "sticker_4.png",
+        "rarity":  "Remarkable",
+        "color":  "#8847ff"
+    },
+    {
+        "id":  "st5",
+        "name":  "Sticker | Vox Eminor (Holo) | Katowice 2014",
+        "file":  "sticker_5.png",
+        "rarity":  "Remarkable",
+        "color":  "#8847ff"
+    },
+    {
+        "id":  "st6",
+        "name":  "Sticker | Reason Gaming (Holo) | Katowice 2014",
+        "file":  "sticker_6.png",
+        "rarity":  "Remarkable",
+        "color":  "#8847ff"
+    },
+    {
+        "id":  "st7",
+        "name":  "Sticker | ESL Skull (Foil) | Katowice 2014",
+        "file":  "sticker_7.png",
+        "rarity":  "Exotic",
+        "color":  "#eb4b4b"
+    },
+    {
+        "id":  "st8",
+        "name":  "Sticker | Boom (Foil)",
+        "file":  "sticker_8.png",
+        "rarity":  "Exotic",
+        "color":  "#eb4b4b"
+    },
+    {
+        "id":  "st9",
+        "name":  "Sticker | FaZe Clan (Holo) | MLG Columbus 2016",
+        "file":  "sticker_9.png",
+        "rarity":  "Remarkable",
+        "color":  "#8847ff"
+    },
+    {
+        "id":  "st10",
+        "name":  "Sticker | s1mple | Antwerp 2022",
+        "file":  "sticker_10.png",
+        "rarity":  "High Grade",
+        "color":  "#4b69ff"
+    },
+    {
+        "id":  "st11",
+        "name":  "Sticker | Natus Vincere | Katowice 2014",
+        "file":  "sticker_11.png",
+        "rarity":  "High Grade",
+        "color":  "#4b69ff"
+    },
+    {
+        "id":  "st12",
+        "name":  "Sticker | Ninjas in Pyjamas (Holo) | Katowice 2014",
+        "file":  "sticker_12.png",
+        "rarity":  "Remarkable",
+        "color":  "#8847ff"
+    },
+    {
+        "id":  "st13",
+        "name":  "Sticker | Fnatic (Holo) | Katowice 2014",
+        "file":  "sticker_13.png",
+        "rarity":  "Remarkable",
+        "color":  "#8847ff"
+    },
+    {
+        "id":  "st14",
+        "name":  "Sticker | Gold ESL Skull (Foil) | Katowice 2014",
+        "file":  "sticker_14.png",
+        "rarity":  "Exotic",
+        "color":  "#eb4b4b"
+    }
+]

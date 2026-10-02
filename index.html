@@ -1592,6 +1592,28 @@ window.__cs2UiScale = function () {
     box-shadow: 0 0 7px rgba(210,232,252,0.6), inset 0 -1px 2px rgba(25,35,45,0.45), inset 0 1px 1px rgba(255,255,255,0.8);
   }
   #coins i { width: 21px; height: 21px; font-size: 14px; margin-left: 3px; }
+  /* naklejki w inspekcie */
+  #csweb-stickers { position: fixed; left: 50%; bottom: 9%; transform: translateX(-50%);
+    display: none; z-index: 70; background: rgba(8,12,16,0.92);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 10px 14px;
+    max-width: 520px; }
+  #csweb-stickers .csweb-st-title { color: #fff; font-size: 12px; font-weight: 800;
+    letter-spacing: 2px; margin-bottom: 8px; text-align: center; }
+  #csweb-stickers .csweb-st-slots { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+  #csweb-stickers .csweb-st-slot { width: 52px; height: 52px; border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; background: rgba(255,255,255,0.04); color: #888; font-size: 20px; }
+  #csweb-stickers .csweb-st-slot.sel { border-color: #8bc53f; }
+  #csweb-stickers .csweb-st-slot img { max-width: 46px; max-height: 46px; }
+  #csweb-stickers .csweb-st-slot b { position: absolute; top: -7px; right: -5px; color: #ff7b7b;
+    font-size: 15px; cursor: pointer; }
+  #csweb-stickers .csweb-st-grid { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    max-height: 118px; overflow-y: auto; }
+  #csweb-stickers .csweb-st-item { width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.03); }
+  #csweb-stickers .csweb-st-item:hover { border-color: #8bc53f; }
+  #csweb-stickers .csweb-st-item img { max-width: 40px; max-height: 40px; }
 
   .tabpage { position: absolute; inset: 92px 0 0 0; display: none; }
   .tabpage.sel { display: block; }
@@ -2385,6 +2407,7 @@ window.__cs2UiScale = function () {
 <div id="vignette"></div>
   <script src="./csweb-mods.js?v=13"></script>
   <script src="./csweb-profiles.js?v=13"></script>
+  <script src="./csweb-stickers.js?v=01"></script>
   <script>
   /* CSWEB branding: podmienia napisy CLUTCHER/CLUTCHER.IO w menu i HUD na CSWEB.
      Osobny skrypt (nie tyka silnika gry) - usunac, aby wrocic do org. napisow. */
@@ -2401,7 +2424,7 @@ window.__cs2UiScale = function () {
       var nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(function (n) {
-        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.13');
+        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.14');
       });
       // ogon ".IO" (np. CLUTCHER[.IO] w logo): usun, gdy obok jest juz CSWEB
       document.querySelectorAll('span').forEach(function (s) {
