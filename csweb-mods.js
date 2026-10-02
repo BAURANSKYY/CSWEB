@@ -185,6 +185,32 @@
     } catch (e) {}
   }
 
+  /* ---------- 2e. RATUNEK OBRAZKOW: retry przy timeoutach serwera ---------- */
+  function imgRescue() {
+    try {
+      document.addEventListener('error', function (ev) {
+        try {
+          var el = ev.target;
+          if (!el || el.tagName !== 'IMG') return;
+          var src = el.getAttribute('src') || '';
+          if (!src || src.indexOf('ui/') !== 0 && src.indexOf('/ui/') < 0) return;
+          if (el.cswebRetried) { el.style.opacity = '0'; return; }
+          el.cswebRetried = true;
+          var clean = src.split('?')[0];
+          setTimeout(function () {
+            try { el.style.opacity = ''; el.src = clean + '?r=1'; } catch (e) {}
+          }, 1500);
+        } catch (e) {}
+      }, true);
+      document.addEventListener('load', function (ev) {
+        try {
+          var el = ev.target;
+          if (el && el.tagName === 'IMG' && el.style.opacity === '0' && el.naturalWidth > 0) el.style.opacity = '';
+        } catch (e) {}
+      }, true);
+    } catch (e) {}
+  }
+
   function scoreFix() {
     try {
       var sb = document.getElementById('scoreboard');
@@ -449,6 +475,7 @@
 
   /* ---------- start ---------- */
   xhairApply();
+  imgRescue();
   mapLabels(document);
   hideJunk();
   csgoMenu();

@@ -17,4 +17,4 @@ const server = http.createServer((req, res) => {
     else { res.writeHead(200, {'Content-Type': types[path.extname(f).toLowerCase()] || 'application/octet-stream'}); res.end(d); }
   });
 });
-server.listen(8901, () => console.log('Clutcher mirror: http://localhost:8901'));
+server.listen(8901, () => console.log('csweb: http://localhost:8901'));
