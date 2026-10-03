@@ -31,7 +31,7 @@ try { $listener.Start() } catch {
 }
 Write-Output ('CSWEB dziala na http://localhost:' + $port + '  (zamknij to okno, aby wylaczyc)')
 if ($lan) { Write-Output ('Drugi komp w tej samej sieci wpisuje: http://' + $lan + ':' + $port) }
-Start-Process ('http://localhost:' + $port + '/')
+if (-not $env:CSWEB_NOBROWSER) { Start-Process ('http://localhost:' + $port + '/') }
 $nf404 = 0
 while ($listener.IsListening) {
   $ctx = $null
