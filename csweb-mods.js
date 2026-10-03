@@ -519,6 +519,11 @@
   buildMarket();
   document.addEventListener('keydown', function (e) {
     if (e.code === 'Tab') document.body.classList.add('csweb-bigmap');
+    /* F9: awaryjne odblokowanie kursora + powrot do menu (gdyby ladowanie utknelo) */
+    if (e.key === 'F9') {
+      try { if (document.exitPointerLock) document.exitPointerLock(); } catch (ee) {}
+      try { if (window.game && window.game.toMenu) window.game.toMenu(); } catch (ee) {}
+    }
   });
   document.addEventListener('keyup', function (e) {
     if (e.code === 'Tab') document.body.classList.remove('csweb-bigmap');
@@ -539,4 +544,27 @@
     buildMarket();
     restoreMarket();
   }).observe(document.documentElement, { childList: true, subtree: true });
+
+  /* ---------- 2h. WATCHDOG ladowania: przycisk PLAY wisi na LOADING xx% za dlugo
+     -> uwolnij kursor, wroc do menu z podpowiedzia (odciecie: serwer GRAJ.bat / audio). */
+  var LW = { txt: null, since: 0 };
+  setInterval(function () {
+    try {
+      var b = document.getElementById('btn-play');
+      if (!b || !b.classList.contains('loading')) { LW.txt = null; return; }
+      var t = (b.textContent || '').replace(/\s+/g, ' ').trim();
+      var now = Date.now();
+      if (t !== LW.txt) { LW.txt = t; LW.since = now; return; }
+      if (now - LW.since > 60000) {
+        LW.since = now;
+        try { if (document.exitPointerLock) document.exitPointerLock(); } catch (e) {}
+        try { if (window.game && window.game.toMenu) window.game.toMenu(); } catch (e) {}
+        try {
+          if (window.game && window.game.hud && window.game.hud.announce)
+            window.game.hud.announce('Loading stuck - sprawdz okno GRAJ.bat i wcisnij F5', 7000);
+        } catch (e) {}
+        try { console.warn('[CSWEB] loading watchdog: utkniete ladowanie, wrocilem do menu'); } catch (e) {}
+      }
+    } catch (e) {}
+  }, 5000);
 })();

@@ -399,6 +399,10 @@
       TICK++;
       paintUI();
       if (TICK % 2) return;
+      try {
+        var st8 = window.game && window.game.state;
+        if (st8 !== 'menu' && st8 !== 'playing' && st8 !== 'paused') return;
+      } catch (e) { return; }
       eachGroup(function (group, info) {
         try {
           var item = resolveItem(info);
