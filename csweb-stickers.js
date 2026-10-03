@@ -93,6 +93,8 @@
   function paintUI() {
     try {
       var ov = document.getElementById('inspectov');
+      var uid = fallbackUid();
+      if (uid) INSPECT_UID = uid;
       var bar = ensureUI();
       if (!bar) return;
       var show = !!(ov && getComputedStyle(ov).display !== 'none' && INSPECT_UID);
@@ -139,14 +141,39 @@
   try {
     document.addEventListener('click', function (ev) {
       try {
+        var tile = ev.target.closest ? ev.target.closest('.skintile') : null;
+        if (tile && tile.getAttribute('data-uid')) {
+          INSPECT_UID = tile.getAttribute('data-uid');
+          UI_SLOT = 0;
+          return;
+        }
         var b = ev.target.closest ? ev.target.closest('.st-view') : null;
         if (!b) return;
-        var tile = b.closest ? b.closest('.skintile') : null;
-        INSPECT_UID = tile ? tile.getAttribute('data-uid') : null;
+        var tile2 = b.closest ? b.closest('.skintile') : null;
+        INSPECT_UID = tile2 ? tile2.getAttribute('data-uid') : INSPECT_UID;
         UI_SLOT = 0;
       } catch (e) {}
     }, true);
   } catch (e) {}
+  /* fallback: gdy inspect otwarty bez znanego uid (np. z loadoutu),
+     dopasuj po nazwie skina widocznej w inspekcie */
+  function fallbackUid() {
+    try {
+      if (INSPECT_UID && findItem(INSPECT_UID)) return INSPECT_UID;
+      var ov = document.getElementById('inspectov');
+      if (!ov || getComputedStyle(ov).display === 'none') return null;
+      var txt = (ov.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+      var d = invRead();
+      if (!d || !d.items || !SHOPCAT) return null;
+      for (var k = 0; k < d.items.length; k++) {
+        var it = d.items[k];
+        if (!it || !it.skin) continue;
+        var ce = SHOPCAT[it.skin];
+        if (ce && ce.name && txt.indexOf(ce.name) >= 0) return it.uid;
+      }
+    } catch (e) {}
+    return null;
+  }
 
   /* ---------- render: plastry na slotach ---------- */
   function gapFrames(group) {
