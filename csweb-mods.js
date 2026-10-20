@@ -574,9 +574,12 @@
       var row = document.getElementById('csweb-potato');
       if (!row) return;
       var on = potatoOn();
-      row.classList.toggle('on', on);
+      if (row.classList.contains('on') !== on) row.classList.toggle('on', on);
       var b = row.querySelector('b');
-      if (b) b.textContent = on ? 'ON' : 'OFF';
+      if (b) {
+        var txt = on ? 'ON' : 'OFF';
+        if (b.textContent !== txt) b.textContent = txt;
+      }
     } catch (e) {}
   };
 
