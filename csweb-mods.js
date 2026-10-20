@@ -508,12 +508,17 @@
      Wymusza low + recznie jeszcze nizej: pixelRatio 0.4, brak blooma, aniso 1.
      Flaga: localStorage clutcher_potato, URL ?potato=1/0. Zero edycji silnika. */
   var POTATO_PR = 0.4;
+  var _potatoHeavy = false;
+  var _potatoUrlDone = false;
   function potatoOn() {
     try {
-      var q = null;
-      try { q = new URLSearchParams(location.search).get('potato'); } catch (e) {}
-      if (q === '1') { try { localStorage.setItem('clutcher_potato', '1'); } catch (e) {} return true; }
-      if (q === '0') { try { localStorage.setItem('clutcher_potato', '0'); } catch (e) {} return false; }
+      if (!_potatoUrlDone) {
+        _potatoUrlDone = true;
+        var q = null;
+        try { q = new URLSearchParams(location.search).get('potato'); } catch (e) {}
+        if (q === '1') { try { localStorage.setItem('clutcher_potato', '1'); } catch (e) {} return true; }
+        if (q === '0') { try { localStorage.setItem('clutcher_potato', '0'); } catch (e) {} return false; }
+      }
       return localStorage.getItem('clutcher_potato') === '1';
     } catch (e) { return false; }
   }
@@ -521,21 +526,31 @@
     try {
       var g = window.game;
       if (!g || !g.renderer) return false;
-      try { g.setGfxManual && g.setGfxManual(); } catch (e) {}
-      try { g.setQuality && g.setQuality('low'); } catch (e) {}
-      try {
-        g._prSteps = [POTATO_PR]; g._prIdx = 0; g._prDeep = true; g._prAutoFloor = 0;
-        g._prPinned = 0; g._prProbe = null; g._prClimb = null;
-        g.renderer.setPixelRatio(POTATO_PR);
-        g.renderer.setSize(innerWidth, innerHeight);
-        g._syncPost && g._syncPost();
-      } catch (e) {}
-      try { g.setBloomPref && g.setBloomPref(false); } catch (e) {}
-      try { g.postfx && g.postfx.setBloom && g.postfx.setBloom(false); } catch (e) {}
-      try { g.setAniso && g.setAniso(1); } catch (e) {}
+      if (!_potatoHeavy) {
+        try { g.setGfxManual && g.setGfxManual(); } catch (e) {}
+        try { g.setQuality && g.setQuality('low'); } catch (e) {}
+        try { g.setBloomPref && g.setBloomPref(false); } catch (e) {}
+        try { g.postfx && g.postfx.setBloom && g.postfx.setBloom(false); } catch (e) {}
+        try { g.setAniso && g.setAniso(1); } catch (e) {}
+        _potatoHeavy = true;
+      }
+      potatoMaintain();
       try { document.body.classList.add('csweb-potato'); } catch (e) {}
       return true;
     } catch (e) { return false; }
+  }
+  /* lekka poprawka co 3 s: pin pixelRatio tylko gdy cos go zmienilo (auto-res) */
+  function potatoMaintain() {
+    try {
+      var g = window.game;
+      if (!g || !g.renderer) return;
+      if (Math.abs(g.renderer.getPixelRatio() - POTATO_PR) < 0.001) return;
+      g._prSteps = [POTATO_PR]; g._prIdx = 0; g._prDeep = true; g._prAutoFloor = 0;
+      g._prPinned = 0; g._prProbe = null; g._prClimb = null;
+      g.renderer.setPixelRatio(POTATO_PR);
+      g.renderer.setSize(innerWidth, innerHeight);
+      g._syncPost && g._syncPost();
+    } catch (e) {}
   }
   function potatoUI() {
     try {
@@ -543,27 +558,29 @@
       if (!tab || document.getElementById('csweb-potato')) return;
       var anchor = null;
       try {
-        var rows = tab.querySelectorAll('div');
-        for (var k = 0; k < rows.length; k++) {
-          var t = (rows[k].textContent || '').replace(/\s+/g, ' ').trim();
-          if (/^quality/i.test(t) && rows[k].children.length > 0) { anchor = rows[k]; break; }
-        }
+        var q = document.getElementById('opt-rscale') || document.getElementById('opt-quality');
+        if (q) anchor = q.closest('.srow');
       } catch (e) {}
       var row = document.createElement('div');
+      row.className = 'srow';
       row.id = 'csweb-potato';
-      row.innerHTML = '<span>POTATO MODE <i>max fps na slabych PC</i></span><b></b>';
-      row.addEventListener('click', function () {
+      row.innerHTML = '<label>POTATO MODE</label><div class="qrow">' +
+        '<button data-v="1">On</button><button data-v="0">Off</button></div>';
+      row.addEventListener('click', function (e) {
         try {
-          var on = !potatoOn();
-          try { localStorage.setItem('clutcher_potato', on ? '1' : '0'); } catch (e) {}
+          var btn = e.target.closest('button');
+          if (!btn) return;
+          var on = btn.dataset.v === '1';
+          try { localStorage.setItem('clutcher_potato', on ? '1' : '0'); } catch (ee) {}
           if (on) potatoApply();
           else {
-            try { document.body.classList.remove('csweb-potato'); } catch (e) {}
-            try { window.game && window.game.setQuality && window.game.setQuality('medium'); } catch (e) {}
+            _potatoHeavy = false;
+            try { document.body.classList.remove('csweb-potato'); } catch (ee) {}
+            try { window.game && window.game.setQuality && window.game.setQuality('medium'); } catch (ee) {}
           }
-          try { window.game && window.game.audio && window.game.audio.play && window.game.audio.play('uiclick'); } catch (e) {}
+          try { window.game && window.game.audio && window.game.audio.play && window.game.audio.play('uiclick'); } catch (ee) {}
           potatoUI.paint();
-        } catch (e) {}
+        } catch (ee) {}
       });
       if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(row, anchor.nextSibling);
       else tab.appendChild(row);
@@ -574,11 +591,10 @@
       var row = document.getElementById('csweb-potato');
       if (!row) return;
       var on = potatoOn();
-      if (row.classList.contains('on') !== on) row.classList.toggle('on', on);
-      var b = row.querySelector('b');
-      if (b) {
-        var txt = on ? 'ON' : 'OFF';
-        if (b.textContent !== txt) b.textContent = txt;
+      var btns = row.querySelectorAll('button');
+      for (var i = 0; i < btns.length; i++) {
+        var want = btns[i].dataset.v === '1' ? on : !on;
+        if (btns[i].classList.contains('sel') !== want) btns[i].classList.toggle('sel', want);
       }
     } catch (e) {}
   };
