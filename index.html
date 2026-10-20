@@ -1614,6 +1614,16 @@ window.__cs2UiScale = function () {
     background: rgba(255,255,255,0.03); }
   #csweb-stickers .csweb-st-item:hover { border-color: #8bc53f; }
   #csweb-stickers .csweb-st-item img { max-width: 40px; max-height: 40px; }
+  /* potato mode */
+  #csweb-potato { display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px; margin: 6px 0; border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px; cursor: pointer; color: #fff; font-weight: 800;
+    letter-spacing: 1px; }
+  #csweb-potato i { font-style: normal; font-weight: 400; opacity: 0.6; font-size: 11px;
+    display: block; letter-spacing: 0; }
+  #csweb-potato b { color: #888; }
+  #csweb-potato.on { border-color: #8bc53f; }
+  #csweb-potato.on b { color: #8bc53f; }
 
   .tabpage { position: absolute; inset: 92px 0 0 0; display: none; }
   .tabpage.sel { display: block; }
@@ -2405,9 +2415,9 @@ window.__cs2UiScale = function () {
 <body>
   <div id="game"></div>
 <div id="vignette"></div>
-  <script src="./csweb-mods.js?v=14"></script>
+  <script src="./csweb-mods.js?v=15"></script>
   <script src="./csweb-profiles.js?v=14"></script>
-  <script src="./csweb-stickers.js?v=03"></script>
+  <script src="./csweb-stickers.js?v=04"></script>
   <script>
   /* CSWEB branding: podmienia napisy CLUTCHER/CLUTCHER.IO w menu i HUD na CSWEB.
      Osobny skrypt (nie tyka silnika gry) - usunac, aby wrocic do org. napisow. */
@@ -2424,7 +2434,7 @@ window.__cs2UiScale = function () {
       var nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(function (n) {
-        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.18');
+        n.nodeValue = n.nodeValue.replace(/clutcher(\.io)?/gi, 'CSWEB').replace(/v0\.2\s*\(Pre-Alpha\)/gi, 'v0.19');
       });
       // ogon ".IO" (np. CLUTCHER[.IO] w logo): usun, gdy obok jest juz CSWEB
       document.querySelectorAll('span').forEach(function (s) {

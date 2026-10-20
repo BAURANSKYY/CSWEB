@@ -504,6 +504,82 @@
     } catch (e) {}
   }
 
+  /* ---------- 2g. POTATO MODE: maks fps na slabych PC (szkola).
+     Wymusza low + recznie jeszcze nizej: pixelRatio 0.4, brak blooma, aniso 1.
+     Flaga: localStorage clutcher_potato, URL ?potato=1/0. Zero edycji silnika. */
+  var POTATO_PR = 0.4;
+  function potatoOn() {
+    try {
+      var q = null;
+      try { q = new URLSearchParams(location.search).get('potato'); } catch (e) {}
+      if (q === '1') { try { localStorage.setItem('clutcher_potato', '1'); } catch (e) {} return true; }
+      if (q === '0') { try { localStorage.setItem('clutcher_potato', '0'); } catch (e) {} return false; }
+      return localStorage.getItem('clutcher_potato') === '1';
+    } catch (e) { return false; }
+  }
+  function potatoApply() {
+    try {
+      var g = window.game;
+      if (!g || !g.renderer) return false;
+      try { g.setGfxManual && g.setGfxManual(); } catch (e) {}
+      try { g.setQuality && g.setQuality('low'); } catch (e) {}
+      try {
+        g._prSteps = [POTATO_PR]; g._prIdx = 0; g._prDeep = true; g._prAutoFloor = 0;
+        g._prPinned = 0; g._prProbe = null; g._prClimb = null;
+        g.renderer.setPixelRatio(POTATO_PR);
+        g.renderer.setSize(innerWidth, innerHeight);
+        g._syncPost && g._syncPost();
+      } catch (e) {}
+      try { g.setBloomPref && g.setBloomPref(false); } catch (e) {}
+      try { g.postfx && g.postfx.setBloom && g.postfx.setBloom(false); } catch (e) {}
+      try { g.setAniso && g.setAniso(1); } catch (e) {}
+      try { document.body.classList.add('csweb-potato'); } catch (e) {}
+      return true;
+    } catch (e) { return false; }
+  }
+  function potatoUI() {
+    try {
+      var tab = document.getElementById('tab-settings');
+      if (!tab || document.getElementById('csweb-potato')) return;
+      var anchor = null;
+      try {
+        var rows = tab.querySelectorAll('div');
+        for (var k = 0; k < rows.length; k++) {
+          var t = (rows[k].textContent || '').replace(/\s+/g, ' ').trim();
+          if (/^quality/i.test(t) && rows[k].children.length > 0) { anchor = rows[k]; break; }
+        }
+      } catch (e) {}
+      var row = document.createElement('div');
+      row.id = 'csweb-potato';
+      row.innerHTML = '<span>POTATO MODE <i>max fps na slabych PC</i></span><b></b>';
+      row.addEventListener('click', function () {
+        try {
+          var on = !potatoOn();
+          try { localStorage.setItem('clutcher_potato', on ? '1' : '0'); } catch (e) {}
+          if (on) potatoApply();
+          else {
+            try { document.body.classList.remove('csweb-potato'); } catch (e) {}
+            try { window.game && window.game.setQuality && window.game.setQuality('medium'); } catch (e) {}
+          }
+          try { window.game && window.game.audio && window.game.audio.play && window.game.audio.play('uiclick'); } catch (e) {}
+          potatoUI.paint();
+        } catch (e) {}
+      });
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(row, anchor.nextSibling);
+      else tab.appendChild(row);
+    } catch (e) {}
+  }
+  potatoUI.paint = function () {
+    try {
+      var row = document.getElementById('csweb-potato');
+      if (!row) return;
+      var on = potatoOn();
+      row.classList.toggle('on', on);
+      var b = row.querySelector('b');
+      if (b) b.textContent = on ? 'ON' : 'OFF';
+    } catch (e) {}
+  };
+
   /* ---------- start ---------- */
   xhairApply();
   imgRescue();
@@ -543,7 +619,17 @@
     xhairUI();
     buildMarket();
     restoreMarket();
+    potatoUI();
+    potatoUI.paint();
   }).observe(document.documentElement, { childList: true, subtree: true });
+
+  /* potato: pierwsze zastosowanie + pilnowanie pina co 3 s */
+  try {
+    if (potatoOn()) { potatoApply(); console.log('[CSWEB] potato mode ON (early)'); }
+  } catch (e) {}
+  setInterval(function () {
+    try { if (potatoOn()) potatoApply(); } catch (e) {}
+  }, 3000);
 
   /* ---------- 2h. WATCHDOG ladowania: przycisk PLAY wisi na LOADING xx% za dlugo
      -> uwolnij kursor, wroc do menu z podpowiedzia (odciecie: serwer GRAJ.bat / audio). */

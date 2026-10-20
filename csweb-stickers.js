@@ -430,6 +430,12 @@
         var st8 = window.game && window.game.state;
         if (st8 !== 'menu' && st8 !== 'playing' && st8 !== 'paused') return;
       } catch (e) { return; }
+      try {
+        if (localStorage.getItem('clutcher_potato') === '1') {
+          eachGroup(function (group) { try { clearDecals(group); } catch (e) {} });
+          return;
+        }
+      } catch (e) {}
       eachGroup(function (group, info) {
         try {
           var item = resolveItem(info);
