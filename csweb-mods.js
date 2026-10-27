@@ -599,6 +599,150 @@
     } catch (e) {}
   };
 
+  /* ---------- 2g2. ADVANCED: wylaczniki wydajnosci pod POTATO.
+     Dziury po pociskach / Krew / Dodatkowe elementy mapy / Jakosc skinow.
+     Dzialaja niezaleznie od mastera potato (zapis w clutcher_adv). */
+  var _adv = { holes: 1, blood: 1, props: 1, skins: 2 }; /* holes/blood/props 1=on 0=off; skins 2=high 1=low */
+  try {
+    var _as = JSON.parse(localStorage.getItem('clutcher_adv') || '{}');
+    for (var _k in _adv) if (_k in _as) _adv[_k] = _as[_k];
+  } catch (e) {}
+  function advSave() { try { localStorage.setItem('clutcher_adv', JSON.stringify(_adv)); } catch (e) {} }
+
+  /* dziury + krew: opakowanie _stampDecal, filtruje po zrodle dekalu */
+  var _advStamp = null, _advHoles = null, _advSplats = null;
+  function advDecals() {
+    try {
+      var fx = window.game && window.game.effects;
+      if (!fx || !fx._stampDecal || _advStamp) return;
+      _advStamp = fx._stampDecal;
+      try { _advHoles = new Set(Object.values(fx._holes || {})); } catch (e) { _advHoles = new Set(); }
+      try { _advSplats = new Set(fx._splats || []); } catch (e) { _advSplats = new Set(); }
+      fx._stampDecal = function (e) {
+        if (!_adv.holes && _advHoles.has(e)) return;
+        if (!_adv.blood && _advSplats.has(e)) return;
+        return _advStamp.apply(this, arguments);
+      };
+    } catch (e) {}
+  }
+
+  /* dodatkowe elementy mapy (doniczki, cegly, mlotki...): dzieci _mapRoot o nazwie _prop_/_lod/_bg_body */
+  var _advProps = null, _advMapId = null;
+  function advPropsScan() {
+    try {
+      var g = window.game;
+      var root = g && g._mapRoot;
+      if (!root || !root.children) { _advProps = null; _advMapId = null; return; }
+      var mid = g.map && g.map.id;
+      if (_advProps && _advMapId === mid) return;
+      _advProps = [];
+      _advMapId = mid;
+      var re = /_prop_|_lod\d|_bg_body|_agg_/i;
+      for (var i = 0; i < root.children.length; i++) {
+        var ch = root.children[i];
+        if (ch.name && re.test(ch.name)) _advProps.push(ch);
+      }
+    } catch (e) { _advProps = null; }
+  }
+  function advPropsApply() {
+    advPropsScan();
+    if (!_advProps) return;
+    var vis = _adv.props === 1;
+    for (var i = 0; i < _advProps.length; i++) _advProps[i].visible = vis;
+  }
+
+  /* jakosc skinow: low = anizotropia 0 na teksturach broni (viewmodel) */
+  var _advSkinTex = null;
+  function advSkinsApply() {
+    try {
+      var g = window.game;
+      var vm = g && g.viewmodel && g.viewmodel.scene;
+      if (!vm) return;
+      var low = _adv.skins === 1;
+      if (low && !_advSkinTex) {
+        _advSkinTex = [];
+        vm.traverse(function (o) {
+          if (!o.isMesh) return;
+          var mats = Array.isArray(o.material) ? o.material : [o.material];
+          for (var i = 0; i < mats.length; i++) {
+            var t = mats[i] && mats[i].map;
+            if (t && t.anisotropy) { _advSkinTex.push({ t: t, a: t.anisotropy }); t.anisotropy = 0; t.needsUpdate = true; }
+          }
+        });
+      } else if (!low && _advSkinTex) {
+        for (var j = 0; j < _advSkinTex.length; j++) { _advSkinTex[j].t.anisotropy = _advSkinTex[j].a; _advSkinTex[j].t.needsUpdate = true; }
+        _advSkinTex = null;
+      }
+    } catch (e) {}
+  }
+
+  function advApply() {
+    advDecals();
+    advPropsApply();
+    advSkinsApply();
+  }
+
+  /* UI: rozwijana sekcja Advanced pod wierszem POTATO */
+  function advUI() {
+    try {
+      if (document.getElementById('csweb-adv')) return;
+      var row = document.getElementById('csweb-potato');
+      if (!row || !row.parentNode) return;
+      var box = document.createElement('div');
+      box.id = 'csweb-adv';
+      var defs = [
+        ['holes', 'Dziury po pociskach'],
+        ['blood', 'Krew na scianach'],
+        ['props', 'Dodatkowe elementy mapy'],
+        ['skins', 'Jakosc skinow']
+      ];
+      var html = '<div class="csweb-adv-h">ADVANCED SETTINGS</div>';
+      for (var i = 0; i < defs.length; i++) {
+        var key = defs[i][0], label = defs[i][1];
+        html += '<div class="srow csweb-adv-r" data-k="' + key + '"><label>' + label.toUpperCase() + '</label><div class="qrow">' +
+          (key === 'skins'
+            ? '<button data-v="2">High</button><button data-v="1">Low</button>'
+            : '<button data-v="1">On</button><button data-v="0">Off</button>') +
+          '</div></div>';
+      }
+      box.innerHTML = html;
+      box.addEventListener('click', function (e) {
+        try {
+          var btn = e.target.closest('button');
+          if (!btn) return;
+          var r = btn.closest('.csweb-adv-r');
+          if (!r) return;
+          var key = r.dataset.k;
+          var v = parseInt(btn.dataset.v, 10);
+          _adv[key] = v;
+          advSave();
+          advApply();
+          advUI.paint();
+          try { window.game && window.game.audio && window.game.audio.play && window.game.audio.play('uiclick'); } catch (ee) {}
+        } catch (ee) {}
+      });
+      row.parentNode.insertBefore(box, row.nextSibling);
+      advUI.paint();
+    } catch (e) {}
+  }
+  advUI.paint = function () {
+    try {
+      var box = document.getElementById('csweb-adv');
+      if (!box) return;
+      var rows = box.querySelectorAll('.csweb-adv-r');
+      for (var i = 0; i < rows.length; i++) {
+        var key = rows[i].dataset.k;
+        var cur = _adv[key];
+        var btns = rows[i].querySelectorAll('button');
+        for (var j = 0; j < btns.length; j++) {
+          var want = parseInt(btns[j].dataset.v, 10) === cur;
+          if (btns[j].classList.contains('sel') !== want) btns[j].classList.toggle('sel', want);
+        }
+      }
+    } catch (e) {}
+  };
+
+
   /* ---------- start ---------- */
   xhairApply();
   imgRescue();
@@ -640,14 +784,18 @@
     restoreMarket();
     potatoUI();
     potatoUI.paint();
+    advUI();
+    advUI.paint();
   }).observe(document.documentElement, { childList: true, subtree: true });
 
   /* potato: pierwsze zastosowanie + pilnowanie pina co 3 s */
   try {
     if (potatoOn()) { potatoApply(); console.log('[CSWEB] potato mode ON (early)'); }
   } catch (e) {}
+  try { advApply(); } catch (e) {}
   setInterval(function () {
     try { if (potatoOn()) potatoApply(); } catch (e) {}
+    try { advApply(); } catch (e) {}
   }, 3000);
 
   /* ---------- 2h. WATCHDOG ladowania: przycisk PLAY wisi na LOADING xx% za dlugo
