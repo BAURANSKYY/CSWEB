@@ -532,6 +532,18 @@
         try { g.setBloomPref && g.setBloomPref(false); } catch (e) {}
         try { g.postfx && g.postfx.setBloom && g.postfx.setBloom(false); } catch (e) {}
         try { g.setAniso && g.setAniso(1); } catch (e) {}
+        /* cienie wylaczone kompletnie */
+        try { g.setShadows && g.setShadows('off'); } catch (e) {}
+        /* post-fx: wylacz grade + fxaa (zostaje tylko render + output) */
+        try {
+          var pf = g.postfx;
+          if (pf) {
+            if (pf.grade) pf.grade.enabled = false;
+            if (pf.fxaa) pf.fxaa.enabled = false;
+            if (pf.blurH) pf.blurH.enabled = false;
+            if (pf.blurV) pf.blurV.enabled = false;
+          }
+        } catch (e) {}
         _potatoHeavy = true;
       }
       potatoMaintain();
